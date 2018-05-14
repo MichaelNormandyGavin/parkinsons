@@ -4,10 +4,8 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 from itertools import chain
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
-import seaborn as sb
+
 
 ##Global Variables
 
@@ -41,21 +39,21 @@ def retrieve_uci_data(file = file_address, name = 'parkinsons.zip',pattern = pat
 
 def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, columns = column_names):
 
-	df_list = pd.read_csv(filelist[i],';',names=columns) for i,v in enumerate(filelist)]
+    df_list = [pd.read_csv(filelist[i],';',names=columns) for i,v in enumerate(filelist)]
 
-	combined_df = pd.DataFrame()
+    combined_df = pd.DataFrame()
 
-	for i, df in enumerate(df_list):
-    
-    		for x in list(df['Test ID'].unique()):
-        	new_df = df[df['Test ID'] == x]
-        	new_df['Subject'] = i
-        	new_df['ZeroedTimestamp'] = new_df['Timestamp'] - new_df['Timestamp'].min()
+    for i, df in enumerate(df_list):
+        
+        for x in list(df['Test ID'].unique()):
+            new_df = df[df['Test ID'] == x]
+            new_df['Subject'] = i
+            new_df['ZeroedTimestamp'] = new_df['Timestamp'] - new_df['Timestamp'].min()
 
-		if rolling:
-        		new_df['X_diff'] = new_df['X'].diff(periods).rolling(window).mean().abs()
-        		new_df['Y_diff'] = new_df['Y'].diff(periods).rolling(window).mean().abs()
+        if rolling:
+            new_df['X_diff'] = new_df['X'].diff(periods).rolling(window).mean().abs()
+            new_df['Y_diff'] = new_df['Y'].diff(periods).rolling(window).mean().abs()
         	
-		combined_df = combined_df.append(new_df,ignore_index=True)
+            combined_df = combined_df.append(new_df,ignore_index=True)
 
-	return combined_df
+    return combined_df
