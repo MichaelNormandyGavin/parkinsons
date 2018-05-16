@@ -51,8 +51,8 @@ def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, colum
             new_df['ZeroedTimestamp'] = new_df['Timestamp'] - new_df['Timestamp'].min()
 
         if rolling:
-            new_df['X_diff'] = new_df['X'].diff(periods).rolling(window).mean().abs()
-            new_df['Y_diff'] = new_df['Y'].diff(periods).rolling(window).mean().abs()
+            new_df['X_diff'] = new_df['X'].diff(periods).rolling(window).mean()
+            new_df['Y_diff'] = new_df['Y'].diff(periods).rolling(window).mean()
         	
             combined_df = combined_df.append(new_df,ignore_index=True)
 
