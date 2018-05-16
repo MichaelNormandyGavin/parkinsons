@@ -37,6 +37,18 @@ def retrieve_uci_data(file = file_address, name = 'parkinsons.zip',pattern = pat
 
 	return group_files
 
+def normalize(df):
+    
+    assert isinstance(df,pd.DataFrame), "please use a Pandas DataFrame"
+    
+    non_number = df.select_dtypes(exclude=['number'])
+    
+    df = df.drop(list(non_number.columns),axis=0)
+    
+    df = df.apply(lambda x: (x - x.mean())/x.std(),axis=0)
+    
+    df = pd.concat([df,non_number],axis=1)
+
 def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, columns = column_names):
 
     df_list = [pd.read_csv(filelist[i],';',names=columns) for i,v in enumerate(filelist)]
@@ -51,8 +63,10 @@ def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, colum
             new_df['ZeroedTimestamp'] = new_df['Timestamp'] - new_df['Timestamp'].min()
 
         if rolling:
-            new_df['X_diff'] = new_df['X'].diff(periods).rolling(window).mean()
-            new_df['Y_diff'] = new_df['Y'].diff(periods).rolling(window).mean()
+            new_df['X_diff'] = new_df['X'].diff(periods)
+            new_df['Y_diff'] = new_df['Y'].diff(periods)
+            new_df['X_diff_avg_{}'.format(window)] = new_df['X_diff'].rolling(window).mean()
+            new_df['Y_diff_avg_{}'.format(window)] = new_df['Y_diff'].rolling(window).mean()
         	
             combined_df = combined_df.append(new_df,ignore_index=True)
 
