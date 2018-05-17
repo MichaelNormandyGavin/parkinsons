@@ -39,17 +39,23 @@ def retrieve_uci_data(file = file_address, name = 'parkinsons.zip',pattern = pat
 
 def normalize(df):
     
+    '''Take the numeric columns of DataFrame and normalize for scaled evaluation of distributions
+    
+    df: pandas DataFrame; for transformation, non-numeric columns will be moved to end'''
+    
     assert isinstance(df,pd.DataFrame), "please use a Pandas DataFrame"
     
     non_number = df.select_dtypes(exclude=['number'])
     
-    df = df.drop(list(non_number.columns),axis=0)
+    df = df.drop(list(non_number.columns),axis=1)
     
     df = df.apply(lambda x: (x - x.mean())/x.std(),axis=0)
     
     df = pd.concat([df,non_number],axis=1)
+    
+    return df
 
-def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, columns = column_names):
+def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, columns = column_names,normalize = False):
 
     df_list = [pd.read_csv(filelist[i],';',names=columns) for i,v in enumerate(filelist)]
 
@@ -69,5 +75,8 @@ def make_combined_df(filelist, rolling =  True, periods = 1, window = 100, colum
             new_df['Y_diff_avg_{}'.format(window)] = new_df['Y_diff'].rolling(window).mean()
         	
             combined_df = combined_df.append(new_df,ignore_index=True)
-
+        
+        if normalize:
+            combined_df = normalize(combined_df)
+            
     return combined_df
