@@ -25,7 +25,7 @@ def retrieve_uci_data(file = file_address, name = 'parkinsons.zip',pattern = pat
 	group: string; used for regex string. Should only be 'control' or 'parkinson'
 	
 	'''
-	
+    
 	zip_retrieved = urlretrieve(file,name)
 	zip_get = ZipFile(zip_retrieved[0],'r')
 
@@ -37,7 +37,7 @@ def retrieve_uci_data(file = file_address, name = 'parkinsons.zip',pattern = pat
 
 	return group_files
 
-def normalize(df):
+def normalize_df(df):
     
     '''Take the numeric columns of DataFrame and normalize for scaled evaluation of distributions
     
